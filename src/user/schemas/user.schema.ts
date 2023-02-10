@@ -25,6 +25,8 @@ export class User{
 
     @Prop()
     phoneNumber?: string;
+
+    //страна отправки, назначения, теги
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -10,7 +10,7 @@ import { UserService } from './user.service';
 @Controller('user')
 export class UserController {
     constructor(private readonly userService: UserService) {}
-
+    
     @HttpCode(HttpStatus.OK)
     @Get('details/:id')
     async getDetails(@Param('id') userId: string, @Req() req: Request) {

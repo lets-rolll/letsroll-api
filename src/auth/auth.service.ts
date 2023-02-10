@@ -6,6 +6,8 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/createUser.dto';
 import { SignInDto } from './dto/signIn.dto';
 import { JwtManager } from './jwt/jwt.manager';
+import { SignInViewModel } from './viewModels/sign-in.viewModel';
+import { UpdateRefreshTokenViewModel } from './viewModels/updateREfreshToken.viewModel';
 
 @Injectable()
 export class AuthService {
@@ -44,7 +46,7 @@ export class AuthService {
             expires: tokenResult.expires,
             refresh_token: refresh_token,
             refresh_token_expires: refresh_token_expires
-        }
+        } as SignInViewModel;
     }    
 
     async updateRefreshToken(refreshToken: string){
@@ -66,7 +68,7 @@ export class AuthService {
             expires: tokenResult.expires,
             refresh_token: refreshTokenResult.refresh_token,
             refresh_token_expires: refreshTokenResult.expires
-        }
+        } as UpdateRefreshTokenViewModel;
     }    
 
     private async passwordValidate(password: string, hash: string): Promise<boolean> {

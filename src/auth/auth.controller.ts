@@ -2,15 +2,18 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Req, UseGuard
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/createUser.dto';
 import { SignInDto } from './dto/signIn.dto';
+import { SignInViewModel } from './viewModels/sign-in.viewModel';
+import { UpdateRefreshTokenViewModel } from './viewModels/updateREfreshToken.viewModel';
 
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService){}
 
+    //TODO: Рассылка сообщений
     @HttpCode(HttpStatus.OK)
     @Post('/sign-up')
     async signUp(@Body() createUserDto: CreateUserDto): Promise<any> {
-        let result = await this.authService.createUser(createUserDto).catch((e) => {
+        let result: string = await this.authService.createUser(createUserDto).catch((e) => {
             throw e;
         });
 
@@ -20,7 +23,7 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Post('/sign-in')
     async signIn(@Body() signInDto: SignInDto): Promise<any> {
-        let result = await this.authService.signIn(signInDto).catch((e) => {
+        let result: SignInViewModel = await this.authService.signIn(signInDto).catch((e) => {
             throw e;
         });
         
@@ -30,15 +33,10 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Get('update-refresh-token')
     async updateRefreshToken(@Query('token') refresh_token: string): Promise<any>{
-        let result = await this.authService.updateRefreshToken(refresh_token).catch((e) => {
+        let result: UpdateRefreshTokenViewModel = await this.authService.updateRefreshToken(refresh_token).catch((e) => {
             throw e;
         });
         
-        return {
-                access_token: result.access_token,
-                expires: result.expires,
-                refresh_token: result.refresh_token,
-                refresh_token_expires: result.refresh_token_expires
-            };
+        return result;
     }
 }
