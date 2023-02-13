@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/createUser.dto';
 import { SignInDto } from './dto/signIn.dto';
 import { SignInViewModel } from './viewModels/sign-in.viewModel';
+import { SignUpViewModel } from './viewModels/sign-up.viewModel';
 import { UpdateRefreshTokenViewModel } from './viewModels/updateREfreshToken.viewModel';
 
 describe('AuthController', () => {
@@ -11,7 +12,10 @@ describe('AuthController', () => {
 
   const mockAuthService = {
     createUser: jest.fn(async (dto) => {
-      return '63811fea9f3b19c1289326e2';
+      return {
+        userId: '63811fea9f3b19c1289326e2',
+        token: 'some_token'
+      } as SignUpViewModel;
     }),
 
     signIn: jest.fn(async (dto) => {
@@ -51,11 +55,16 @@ describe('AuthController', () => {
     it('должен возвращать userId', async () => {
       const dto: CreateUserDto = {
         email: 'user123@example.com',
-        password: 'example123'
+        password: 'example123',
+        firstName: 'Юзер',
+        lastName: 'Юзеров',
+        middleName: 'Экзамплович',
+        host: 'http://example.ru/'
       };
 
       expect(await controller.signUp(dto).catch(e => {})).toEqual({
-        userId: expect.any(String)
+        userId: expect.any(String),
+        token: expect.any(String)
       });
     });
   });
@@ -89,4 +98,6 @@ describe('AuthController', () => {
         });
     });
   });
+
+  
 });

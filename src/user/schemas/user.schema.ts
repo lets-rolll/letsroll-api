@@ -16,6 +16,12 @@ export class User{
 
     @Prop({ required: true, unique: true })
     email: string;
+    
+    @Prop()
+    emailConfirmationCode?: number;
+
+    @Prop()
+    emailConfirmed?: boolean;
 
     @Prop()
     avatarUrl?: string;
@@ -25,6 +31,12 @@ export class User{
 
     @Prop()
     phoneNumber?: string;
+
+    @Prop()
+    phoneComfirmed?: boolean;
+    
+    @Prop()
+    phoneConfirmationCode?: number;
 
     //страна отправки, назначения, теги
 }

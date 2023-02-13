@@ -1,9 +1,7 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from './dto/createUser.dto';
 import { SignInDto } from './dto/signIn.dto';
-import { SignInViewModel } from './viewModels/sign-in.viewModel';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -15,7 +13,8 @@ describe('AuthService', () => {
     middleName: "Экзамплович",
     email: "user123@example.com",
     password: "password",
-    phoneNumber: "79534331282"
+    phoneNumber: "79534331282",
+    emailConfirmed: true
   };
 
   beforeEach(async () => {
@@ -31,8 +30,7 @@ describe('AuthService', () => {
             provide: 'UserModel',
             useValue: {
               findOne: async (value: any) => mockUserModel,
-              findById: async (value: any) => mockUserModel,
-              create: async (dto: CreateUserDto) => mockUserModel
+              findById: async (value: any) => mockUserModel
             }
           }
       ],

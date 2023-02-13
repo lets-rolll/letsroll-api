@@ -6,6 +6,7 @@ import { User, UserSchema } from '../user/schemas/user.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt/jwt.strategy';
+import { MailService } from 'src/modules/mail.service';
 
 @Module({
     imports: [
@@ -14,9 +15,9 @@ import { JwtStrategy } from './jwt/jwt.strategy';
         PassportModule,
         JwtModule.register({
             secret: process.env.JWT_SECRET
-        })
+        }),
     ],
     controllers: [AuthController],
-    providers: [AuthService, JwtStrategy]
+    providers: [AuthService, JwtStrategy, MailService]
 })
 export class AuthModule {}
