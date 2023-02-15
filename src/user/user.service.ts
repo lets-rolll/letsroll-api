@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { existsSync, mkdir, unlink, writeFile } from 'fs';
 import { Model } from 'mongoose';
@@ -8,6 +8,7 @@ import { User, UserDocument } from './schemas/user.schema';
 import { DetailsViewModel } from './viewModel/details.viewModel';
 import { v4 as uuid } from 'uuid';
 import { UserViewModel } from './viewModel/user.viewModel';
+import { UpdateLocationDto } from './dto/updateLocation.dto';
 
 const _fileRootPath = './storage/user/avatar/';
 const _filePath: string = '/user/avatar/';
@@ -16,7 +17,9 @@ const _filePath: string = '/user/avatar/';
 export class UserService {
     constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>) {}
 
-    private async getUserById(userId: string) {
+    private logger: Logger = new Logger('UserService');
+
+    private async getUserById(userId: string): Promise<UserDocument> {
         let user = await this.userModel.findById(userId).catch(e => {
             throw new BadRequestException("Неверный id");
         });
@@ -25,14 +28,15 @@ export class UserService {
         return user;
     }
 
-    async getUsers() {
+    private avatarUrlMap(url: string, host: string): string {
+        return url === undefined ? null : host?.concat('/user/avatar/', url);
+    }
+
+    async getUsers(host: string): Promise<UserViewModel[]> {
         let users = await this.userModel.find();
         if (users.length === 0) throw new NotFoundException('Пользователи не найдены');
 
-        let usersVM: UserViewModel[] = [];
-
-        console.log(usersVM);
-        
+        let usersVM: UserViewModel[] = [];        
 
         users.forEach((user) => {
             usersVM.push({
@@ -40,14 +44,14 @@ export class UserService {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 middleName: user.middleName,
-                avatarUrl: user.avatarUrl
+                avatarUrl: this.avatarUrlMap(user.avatarUrl, host)
             })
         });
 
         return usersVM;
     }
 
-    async getDetails(userId: string, host?: string) {
+    async getDetails(userId: string, host?: string): Promise<DetailsViewModel> {
         let user = await this.getUserById(userId);
 
         let detailsViewModel: DetailsViewModel = {
@@ -55,9 +59,11 @@ export class UserService {
             firstName: user.firstName,
             lastName: user.lastName,
             middleName: user.middleName,
-            avatarUrl: user.avatarUrl === undefined ? null : host?.concat('/user/avatar/', user.avatarUrl),
+            avatarUrl: this.avatarUrlMap(user.avatarUrl, host),
             email: user.email,
-            phoneNumber: user.phoneNumber
+            phoneNumber: user.phoneNumber,
+            destination: user.destination,
+            departure: user.departure
         };
 
         return detailsViewModel;
@@ -72,26 +78,36 @@ export class UserService {
         user.save();
     }
 
-    async updateAvatar(userId: string, file: Express.Multer.File, host: string) {
+    async updateLocation(dto: UpdateLocationDto) {
+        let user = await this.getUserById(dto.userId);
+        
+        user.destination = dto.destination;
+        user.departure = dto.departure;
+        user.save();
+    }
+
+    async updateAvatar(userId: string, file: Express.Multer.File, host: string): Promise<string> {
         let user = await this.getUserById(userId);
 
         let _fileName: string = `${uuid()}${extname(file.originalname)}`
         
         if (!existsSync(_fileRootPath)){
-            await mkdir(_fileRootPath, {recursive: true}, (err) => { console.log(err)});
+            mkdir(_fileRootPath, {recursive: true}, (err) => { this.logger.error(err)});
         }
-
+        this.logger.log('exist');
         writeFile(join(_fileRootPath, _fileName), file.buffer, (err) => {
             if (err) {
-                return console.log(err);
+                this.logger.error(err);
             }
         });
+        this.logger.log('write');
 
         unlink(_fileRootPath + user.avatarUrl, (err) => {
             if (err) {
-                console.log(err);
+                this.logger.error(err);
             }
         });
+        this.logger.log('unlink');
 
         user.avatarUrl = _fileName;
         user.save();
@@ -104,7 +120,7 @@ export class UserService {
 
         unlink(_fileRootPath + user.avatarUrl, (err) => {
             if (err){
-                console.log(err);
+                this.logger.error(err);
             }
         });
 

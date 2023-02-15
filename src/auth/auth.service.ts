@@ -149,9 +149,7 @@ export class AuthService {
 
         const decipher = crypto.createDecipheriv(algorithm, process.env.CRYPTO_SECRET, Buffer.from(hash[1], 'hex'));
 
-        const decrpyted: any = JSON.parse(Buffer.concat([decipher.update(Buffer.from(hash[0], 'hex')), decipher.final()]).toString());
-        console.log(decrpyted);
-        
+        const decrpyted: any = JSON.parse(Buffer.concat([decipher.update(Buffer.from(hash[0], 'hex')), decipher.final()]).toString());        
 
         if (code === decrpyted.code && email === decrpyted.email && userId === decrpyted.userId) {
             return true;

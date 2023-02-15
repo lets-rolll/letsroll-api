@@ -38,7 +38,13 @@ export class User{
     @Prop()
     phoneConfirmationCode?: number;
 
-    //страна отправки, назначения, теги
+    @Prop()
+    destination?: string;
+
+    @Prop()
+    departure?: string;
+
+    //TODO: теги
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

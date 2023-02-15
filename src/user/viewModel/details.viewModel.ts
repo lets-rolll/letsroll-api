@@ -6,4 +6,6 @@ export class DetailsViewModel {
     avatarUrl?: string;
     email: string;
     phoneNumber?: string;
+    destination?: string;
+    departure?: string;
 }

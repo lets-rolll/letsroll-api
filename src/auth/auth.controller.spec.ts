@@ -98,6 +98,4 @@ describe('AuthController', () => {
         });
     });
   });
-
-  
 });

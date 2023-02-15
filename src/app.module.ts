@@ -6,9 +6,15 @@ import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+        rootPath: join(__dirname, '..', 'storage/'),
+        exclude: ['/api*', '/join']
+    }),
     AuthModule,
     ConfigModule.forRoot({
         envFilePath: '.env'
