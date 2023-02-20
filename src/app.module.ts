@@ -8,6 +8,10 @@ import { UserModule } from './user/user.module';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { RoomModule } from './room/room.module';
+import { MessageModule } from './message/message.module';
+import { MessageGatewayModule } from './gateways/message-gateway/message.gateway.module';
+import { RoomGatewayModule } from './gateways/room-gateway/room.gateway.module';
 
 @Module({
   imports: [
@@ -17,10 +21,14 @@ import { join } from 'path';
     }),
     AuthModule,
     ConfigModule.forRoot({
-        envFilePath: '.env'
+        envFilePath: '.env',
     }),
     MongooseModule.forRoot(process.env.MONGO_URL),
     UserModule,
+    RoomModule,
+    RoomGatewayModule,
+    MessageModule,
+    MessageGatewayModule,
     MailerModule.forRootAsync({
       useFactory: () => ({
         transport: `smtps://${process.env.SMTP_USERNAME}:${process.env.SMTP_PASSWORD}@${process.env.SMTP_HOST}`,
