@@ -37,7 +37,7 @@ export class UserController {
 
         return users;
     }
-
+    
     @HttpCode(HttpStatus.OK)
     @Put('details')
     async updateUsername(@Body() updateUsernameDto: UpdateUsernameDto) {

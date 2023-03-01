@@ -44,7 +44,7 @@ export class User{
     @Prop()
     departure?: string;
 
-    //TODO: теги
+    //TODO: возраст, теги
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
